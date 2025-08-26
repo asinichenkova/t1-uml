@@ -1,0 +1,20 @@
+@startuml
+class Customer {
+- name: String
+- email: String
++ placeOrder(): void
+}
+
+class Order {
+- orderId: int
+- date: Date
++ calculateTotal(): double
+}
+
+class PremiumCustomer {
++ getRewards(): void
+}
+
+Customer "1    " -- "0..*" Order : places
+Customer <|-- PremiumCustomer
+@enduml
