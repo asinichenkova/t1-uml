@@ -1,0 +1,75 @@
+@startuml
+skinparam actor {
+    BackgroundColor #95C8D8
+    BorderColor Black
+}
+skinparam participant {
+    BackgroundColor #F0F0F0
+    BorderColor Green
+}
+skinparam database {
+    BackgroundColor #FFD700
+    BorderColor Black
+}
+skinparam sequenceMessageAlign left
+
+actor Customer as C
+participant "Web UI" as UI
+participant "Order Controller" as OC
+participant "Payment Service" as PS
+database "База данных" as DB
+participant "Notification Service" as NS
+
+activate C
+group "1. Оформление заказа"
+    C -> UI : initiateOrder(orderDetails)
+    activate UI
+    UI -> OC : processOrder(orderDetails)
+    activate OC
+    OC -> DB : saveOrder(orderDetails)
+    activate DB
+    DB -[#green]-> OC : savedOrder
+    deactivate DB
+    note right : Сохранен заказ в статусе "Ожидание оплаты"
+end
+group "2. Оплата"
+    OC -> PS : processPayment(paymentInfo)
+    activate PS
+    alt Успешная оплата
+        PS -[#green]-> OC : successedPayment(paymentConfirmation)
+        OC -[#lightblue]-> NS : sendOrderNotification(orderId)
+    else Ошибка оплаты
+        PS -[#red]-> OC : paymentFailure(errorMessage)
+        note right : Заказ сохраняется как предварительный
+    end
+    deactivate PS
+end
+group "3. Подтверждение заказа"
+    OC --> UI : orderConfirmation(confirmationDetails)
+    deactivate OC
+    UI --> C : displayConfirmation(confirmationDetails)
+    deactivate UI
+end
+group "4. Изменение корзины"
+    C -> UI : modifyCart(action, itemDetails)
+    note right : Возможные действия: добавление, удаление, изменение количества
+    activate UI
+    UI -> OC : update(action, itemDetails)
+    activate OC
+    OC -> DB : updateCartInDB(cartData)
+    activate DB
+    DB -[#green]-> OC : cartUpdateConfirmation
+    deactivate DB
+    OC --> UI : notifyCartUpdate(cartStatus)
+    deactivate OC
+    UI --> C : displayCartUpdateStatus(cartStatus)
+    deactivate UI
+end
+group "5. Уведомление менеджера"
+    activate UI
+    NS --> UI : newOrderNotification(orderId, status)
+    deactivate UI
+    note right : Менеджер получает уведомление о новом заказе
+end group
+deactivate C
+@enduml

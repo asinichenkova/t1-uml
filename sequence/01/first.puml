@@ -1,0 +1,15 @@
+@startuml
+actor Customer as C
+participant "Web UI" as UI
+participant "Order Controller" as OC
+participant "Payment Service" as PS
+database "База данных" as DB
+C -> UI : initiateOrder(orderDetails)
+UI -> OC : processOrder(orderDetails)
+OC -> DB : saveOrder(orderDetails)
+DB --> OC : savedOrder
+OC -> PS : processPayment(paymentInfo)
+PS --> OC : paymentResult
+OC --> UI : orderConfirmation(confirmationDetails)
+UI --> C : displayConfirmation(confirmationDetails)
+@enduml
