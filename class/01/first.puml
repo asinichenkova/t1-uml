@@ -1,0 +1,49 @@
+@startuml
+PaymentManager o-down- Payment : " manages"
+
+abstract class Payment {
+    -BigDecimal amount
+    -OffsetDateTime paymentDate
+    -UUID transactionId
+    +Payment(BigDecimal amount, OffsetDateTime paymentDate, UUID transactionId)
+    +setAmount(BigDecimal amount)
+    +setPaymentDate(OffsetDateTime paymentDate)
+    +BigDecimal getAmount()
+    +OffsetDateTime getPaymentDate()
+    +UUID getTransactionId()
+    +{abstract} void processPayment()
+}
+
+class CashPayment extends Payment {
+    -BigDecimal cashProvided
+    +CashPayment(BigDecimal amount, OffsetDateTime paymentDate, UUID transactionId, BigDecimal cashProvided)
+    +setCashProvided(BigDecimal)
+    +BigDecimal getCashProvided()
+    +void processPayment()
+    +void calculateCharge()
+}
+
+class CardPayment extends Payment {
+    -String cardNumber
+    -String ownerName
+    -long duration
+    +CardPayment(BigDecimal amount, OffsetDateTime paymentDate, UUID transactionId, String cardNumber, String ownerName, long duration)
+    +setCardNumber(String cardNumber)
+    +setOwnerName(String ownerName)
+    +setDuration(long duration)
+    +String getCardNumber()
+    +String getOwnerName()
+    +long getDuration()
+    +void processPayment()
+    +boolean validateCard()
+}
+
+class PaymentManager {
+    -List<Payment> paymentList
+    +PaymentManager()
+    +getPaymentList()
+    +addPayment(Payment payment)
+    +addPaymentList(List<Payment> paymentList)
+    +void processAllPayments()
+}
+@enduml
