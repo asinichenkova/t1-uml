@@ -2,48 +2,49 @@
 PaymentManager o-down- Payment : " manages"
 
 abstract class Payment {
-    -BigDecimal amount
-    -OffsetDateTime paymentDate
-    -UUID transactionId
-    +Payment(BigDecimal amount, OffsetDateTime paymentDate, UUID transactionId)
-    +setAmount(BigDecimal amount)
-    +setPaymentDate(OffsetDateTime paymentDate)
-    +BigDecimal getAmount()
-    +OffsetDateTime getPaymentDate()
-    +UUID getTransactionId()
-    +{abstract} void processPayment()
+    -amount : BigDecimal
+    -paymentDate : OffsetDateTime
+    -transactionId : UUID
+    +Payment(amount : BigDecimal, paymentDate : OffsetDateTime, transactionId : UUID)
+    +setAmount(amount : BigDecimal) : void
+    +setPaymentDate(paymentDate : OffsetDateTime) : void
+    +getAmount() : BigDecimal
+    +getPaymentDate() : OffsetDateTime
+    +getTransactionId() : UUID
+    +{abstract} processPayment() : void
 }
 
 class CashPayment extends Payment {
-    -BigDecimal cashProvided
-    +CashPayment(BigDecimal amount, OffsetDateTime paymentDate, UUID transactionId, BigDecimal cashProvided)
-    +setCashProvided(BigDecimal)
-    +BigDecimal getCashProvided()
-    +void processPayment()
-    +void calculateCharge()
+    -cashProvided : BigDecimal
+    +CashPayment(amount : BigDecimal, paymentDate : OffsetDateTime, transactionId : UUID, cashProvided : BigDecimal)
+    +setCashProvided(cashProvided : BigDecimal) : void
+    +getCashProvided() : BigDecimal
+    +processPayment() : void
+    +calculateCharge() : BigDecimal
 }
 
 class CardPayment extends Payment {
-    -String cardNumber
-    -String ownerName
-    -long duration
-    +CardPayment(BigDecimal amount, OffsetDateTime paymentDate, UUID transactionId, String cardNumber, String ownerName, long duration)
-    +setCardNumber(String cardNumber)
-    +setOwnerName(String ownerName)
-    +setDuration(long duration)
-    +String getCardNumber()
-    +String getOwnerName()
-    +long getDuration()
-    +void processPayment()
-    +boolean validateCard()
+    -cardNumber : String
+    -ownerName : String
+    -duration : long
+    +CardPayment(amount : BigDecimal, paymentDate : OffsetDateTime, transactionId : UUID, cardNumber : String,
+    ownerName : String, duration : long)
+    +setCardNumber(cardNumber : String) : void
+    +setOwnerName(ownerName : String) : void
+    +setDuration(duration : long) : void
+    +getCardNumber() : String
+    +getOwnerName() : String
+    +long getDuration() : long
+    +processPayment() : void
+    +validateCard() : boolean
 }
 
 class PaymentManager {
-    -List<Payment> paymentList
+    -paymentList : List<Payment>
     +PaymentManager()
-    +getPaymentList()
-    +addPayment(Payment payment)
-    +addPaymentList(List<Payment> paymentList)
-    +void processAllPayments()
+    +getPaymentList() : List<Payment>
+    +addPayment(payment : Payment) : void
+    +addPaymentList(paymentList : List<Payment>) : void
+    +processAllPayments() : void
 }
 @enduml
