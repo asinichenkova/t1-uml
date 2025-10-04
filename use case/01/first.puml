@@ -1,0 +1,45 @@
+@startuml
+
+left to right direction
+actor :Клиент: as client
+actor :VIP-клиент: as vip
+actor :Кредитный менеджер: as manager
+actor :Служба безопасности: as security
+actor :БКИ: as bki
+
+usecase (Оформить заявку) as createApplication
+usecase (Получить персонального\nменеджера) as getPersonalManager
+usecase (Ускорить рассмотрение\nзаявки) as forceProcess
+
+usecase (Рассчитать риски) as calculateRisk
+usecase (Проверить финансовое\nсостояние клиента) as checkClient
+usecase (Запросить кредитную\nисторию клиента) as requestClientLoanHistory
+usecase (Принять решение) as makeDecision
+usecase (Уведомить клиента\nо решении) as notifyClient
+usecase (Запросить дополнительные\nдокументы) as requestAdditionalDocuments
+
+usecase (Предоставить данные\nо кредитной истории) as returnClientLoanHistory
+
+usecase (Проверить заявку\nна мошенничество) as checkForFraud
+
+client <|-- vip
+client --> createApplication
+vip --> getPersonalManager
+vip --> forceProcess
+
+manager --> calculateRisk
+manager --> makeDecision
+manager --> requestAdditionalDocuments
+requestAdditionalDocuments .> makeDecision : <<extend>>
+calculateRisk .-> checkClient : <<include>>
+checkClient .> requestClientLoanHistory : <<include>>
+makeDecision .> notifyClient : <<include>>
+
+manager --> checkClient
+makeDecision .> checkForFraud : <<include>>
+
+bki --> returnClientLoanHistory
+
+security --> checkForFraud
+
+@enduml
