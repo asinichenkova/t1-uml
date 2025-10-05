@@ -1,0 +1,66 @@
+@startuml
+
+skinparam actor {
+    BackgroundColor LightBlue
+    BorderColor Black
+}
+skinparam participant {
+    BackgroundColor LightBlue
+    BorderColor Grey
+}
+skinparam database {
+    BackgroundColor LightBlue
+    BorderColor Black
+}
+skinparam boundary {
+    BackgroundColor LightBlue
+    BorderColor Black
+}
+skinparam sequenceMessageAlign left
+
+title Онлайн-перевод между счетами
+
+actor Клиент as Client
+participant "Мобильное приложение" as App
+participant Бэкенд as Back
+database "База данных" as DB
+boundary "СМС-сервис" as SMS
+
+Client -> App: инициировать перевод
+activate App
+App -> Back: запросить баланс отправителя
+activate Back
+Back -> DB: запросить данные баланса
+activate DB
+DB --> Back: данные баланса
+deactivate DB
+alt Недостаточно средств
+    Back --> App: сообщение о нехватке средств
+    App --> Client: ошибка перевода
+    deactivate App
+else Достаточно средств
+    Back ->> SMS: запросить проверочный код
+    deactivate Back
+    activate SMS
+    SMS --> Client: проверочный код
+    deactivate SMS
+    Client -> App: ввести проверочный код
+    activate App
+    App -> Back: подтвердить перевод
+    opt Подтверждено верно
+        activate Back
+        Back -> DB: выполнить перевод
+        activate DB
+        DB --> Back: данные о выполненном переводе
+        deactivate DB
+        Back --> App: сообщение об успешном переводе
+        App --> Client: успешный перевод
+    else Неправильный код
+        Back --> App: сообщение об ошибке
+        deactivate Back
+        App --> Client: ошибка подтверждения
+        deactivate App
+    end
+end
+
+@enduml
